@@ -1,0 +1,88 @@
+/* styles.css */
+
+/* Style de base pour le corps de la page */
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #f0f0f0;
+    display: flex;
+    flex-direction: column;
+    align-items: center; /* Centre horizontalement les éléments */
+    justify-content: center; /* Centre verticalement les éléments */
+    min-height: 100vh; /* Hauteur minimale de la page à 100% de la vue du navigateur */
+}
+
+/* Style de l'en-tête */
+h1 {
+    text-align: center;
+    margin: 20px 0;
+    color: #333;
+}
+
+/* Style pour le conteneur du bouton et du spinner */
+#conteneurBouton {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+/* Style pour le bouton de traduction */
+#boutonTraduction {
+    width: 100%;
+    max-width: 600px; /* Largeur maximale pour éviter qu'il devienne trop large */
+    padding: 10px;
+    margin: 10px 0; /* Marge en haut et en bas */
+    background-color: #007bff;
+    color: #fff;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+}
+
+#boutonTraduction:hover {
+    background-color: #0056b3;
+}
+
+/* Style pour le spinner */
+#spinner {
+    width: 32px; /* Ajustez la taille du spinner selon vos besoins */
+    height: 32px;
+    margin-bottom: 10px; /* Espacement entre le spinner et le bouton */
+}
+
+/* Style pour la boîte de texte de traduction */
+#texteATraduire, #traduction {
+    width: 100%;
+    max-width: 600px; /* Largeur maximale pour éviter qu'elle devienne trop large */
+    padding: 10px;
+    margin: 10px 0; /* Marge en haut et en bas */
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    resize: none;
+    font-size: 16px; /* Retour à la taille d'origine */
+    background-color: #fff;
+    color: #333;
+}
+
+/* Style pour la boîte de texte d'explications */
+.explicationsTextarea {
+    width: 100%;
+    max-width: 600px; /* Largeur maximale pour éviter qu'elle devienne trop large */
+    padding: 10px;
+    margin: 10px 0; /* Marge en haut et en bas */
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    resize: vertical; /* Permet à la boîte de texte de s'adapter à la taille du texte */
+    font-size: 16px;
+    background-color: #fff;
+    color: #333;
+}
+
+.box {
+    background-color: #fff; /* Couleur de fond des boîtes */
+    border: 1px solid #ddd; /* Bordure autour des boîtes */
+    margin-bottom: 10px; /* Marge en bas de chaque boîte */
+    padding: 10px; /* Espacement intérieur des boîtes */
+}

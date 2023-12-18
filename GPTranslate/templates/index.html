@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>GPTranslate</title>
+</head>
+<body>
+    <h1>GPTranslate - Traducteur en ligne</h1>
+
+    <div id="translatePart">
+        <label for="texteATraduire">Texte à traduire :</label><br>
+        <textarea id="texteATraduire" rows="4" cols="50"></textarea><br><br>
+
+        <label for="traduction">Traduction :</label><br>
+        <textarea id="traduction" rows="4" cols="50" readonly></textarea><br><br>
+
+        <label for="explications">Explications :</label><br>
+        <textarea id="explications" class="explicationsTextarea" rows="4" cols="50" readonly></textarea><br><br>
+
+        <div id="conteneurBouton">
+            <img id="spinner" src="{{ url_for('static', filename='spinner.gif') }}" alt="Chargement en cours">
+            <button id="boutonTraduction">Traduction</button>
+        </div>
+    </div>
+    
+
+    <script src="{{ url_for('static', filename='script.js') }}"></script>
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='styles.css') }}">
+
+</body>
+</html>
