@@ -21,7 +21,7 @@ Creation of a bot to notify me of ticket availability for an esport event. The b
 Bot that lets you play an online game called Tusmo. The bot uses visual recognition and automatic typing to be 100% capable of playing without human assistance.
 
 # YTRecommender
-AI that recommends videos to youtube users based on their likes. The AI contains two models:
+AI that recommends videos to youtube users based on their likes. The AI contains three models:
 - Numerical model: Retrieves numerical information from videos, such as video length, category, etc., in order to deduce a recommendation.
 - Thumbnail model: Retrieves the video's thumbnail to deduce a recommendation.
 - NLP model: retrieves the video title and description to deduce a recommendation
