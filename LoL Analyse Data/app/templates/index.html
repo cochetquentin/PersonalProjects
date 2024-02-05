@@ -2,48 +2,19 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='style.css') }}">
-    <title>Document</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <title>My app</title>
 </head>
 <body>
-    <label for="competition-select">Choose a competition:</label>
-    <select name="competitions" id="competition-select">
-        <option value="">--Please choose an option--</option>
-        <option value="lfl_spring_2024">LFL SPRING 2024</option>
-        <option value="lec_winter_2024">LEC WINTER 2024</option>
-    </select><br><br>
-
-    <fieldset>
-        <legend>Choose your graphs:</legend>
-      
-        <div>
-            <input class="checkbox" type="checkbox" id="side_wr" name="side_wr" value="side_wr" checked/>
-            <label for="side_wr">Side WR</label>
-        </div>
-        <div>
-            <input class="checkbox" type="checkbox" id="objectives_plot" name="objectives_plot" value="objectives_plot" checked/>
-            <label for="objectives_plot">Objectives</label>
-        </div>
-        <div>
-            <input class="checkbox" type="checkbox" id="champions_wr" name="champions_wr" value="champions_wr" checked/>
-            <label for="champions_wr">Champions WR</label>
-        </div>
-        <div>
-            <input class="checkbox" type="checkbox" id="bans_wr" name="bans_wr" value="bans_wr" checked/>
-            <label for="bans_wr">Bans WR</label>
-        </div>
-        <div>
-            <input class="checkbox" type="checkbox" id="role_stats" name="role_stats" value="role_stats" checked/>
-            <label for="role_stats">Roles comparative</label>
-        </div>
-    </fieldset>
-
-
-    {% for data in img_datas %}
-        <img src="{{ url_for('static', filename=data.path) }}" alt="Plot" class="plot {{ data.class }}"><br>
-    {% endfor %}
-
-
-    <script src="{{ url_for('static', filename='script.js') }}"></script>
+    <nav id="navbar">
+        <ul>
+            <li><a href="{{ url_for('index') }}">Home</a></li>
+            <li><a href="{{ url_for('analyse') }}">Analyse</a></li>
+        </ul>
+    </nav>
+    <div id="container">
+        {% block content %}{% endblock %}
+    </div>
 </body>
 </html>

@@ -1,0 +1,59 @@
+{% extends "index.html" %}
+{% block content %}
+
+<h1>Tournament Analyse</h1>
+
+<label for="competition-select">Choose a competition:</label>
+<select name="competitions" id="competition-select">
+    <option value="">--Please choose an option--</option>
+    {% for tournament in possible_tournaments %}
+        <option value="{{ tournament }}">{{ tournament|replace("_", " ")|upper }}</option>
+    {% endfor %}
+</select><br><br>
+
+<div id="fieldset_checkbox">
+    <fieldset>
+        <legend>Choose your graphs:</legend>
+        <div>
+            <input class="checkbox_stats" type="checkbox" id="side_wr" name="side_wr" value="side_wr" checked/>
+            <label for="side_wr">Side WR</label>
+        </div>
+        <div>
+            <input class="checkbox_stats" type="checkbox" id="objectives_plot" name="objectives_plot" value="objectives_plot" checked/>
+            <label for="objectives_plot">Objectives</label>
+        </div>
+        <div>
+            <input class="checkbox_stats" type="checkbox" id="champions_wr" name="champions_wr" value="champions_wr" checked/>
+            <label for="champions_wr">Champions WR</label>
+        </div>
+        <div>
+            <input class="checkbox_stats" type="checkbox" id="bans_wr" name="bans_wr" value="bans_wr" checked/>
+            <label for="bans_wr">Bans WR</label>
+        </div>
+        <div>
+            <input class="checkbox_stats" type="checkbox" id="role_stats" name="role_stats" value="role_stats" checked/>
+            <label for="role_stats">Roles comparative</label>
+        </div>
+    </fieldset>
+
+    <fieldset>
+        <legend>Choose your team:</legend>
+        {% for name in team_names %}
+            <div>
+                <input class="checkbox_teams" type="checkbox" id="{{name}}" name="{{name}}" value="{{name}}" checked/>
+                <label for="{{name}}">{{name}}</label>
+            </div>
+        {% endfor %}
+    </fieldset>
+</div><br><br>
+
+
+
+{% for data in img_datas %}
+    <img src="{{ url_for('static', filename=data.path) }}" alt="Plot" class="plot {{ data.class }}">
+{% endfor %}
+
+
+<script src="{{ url_for('static', filename='script.js') }}"></script>
+
+{% endblock %}

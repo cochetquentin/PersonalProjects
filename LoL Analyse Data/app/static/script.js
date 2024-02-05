@@ -1,35 +1,62 @@
-
 document.getElementById('competition-select').addEventListener('change', function() {
-    var selectedValue = this.value;
-    if(selectedValue) {
-        // Construit l'URL basé sur la sélection et redirige l'utilisateur
-        window.location = `./${selectedValue}`;
-    }
+    var valeur = this.value; // Obtenez la valeur sélectionnée
+    // Construisez l'URL avec la valeur comme paramètre de requête
+    window.location.href = window.location.pathname + '?tournament=' + valeur;
 });
 
 // Fonction pour mettre à jour l'affichage des images
 function updateImageDisplay() {
-    document.querySelectorAll('.plot').forEach(function(img) {
-        // Initialiser une variable pour vérifier si l'image doit être affichée
-        let isImageVisible = false;
-        
-        // Obtenir toutes les checkboxes
-        const checkboxes = document.querySelectorAll('.checkbox');
-        
-        // Itérer sur chaque checkbox pour vérifier si au moins une est cochée et correspond à une classe de l'image
-        checkboxes.forEach(function(checkbox) {
-            if(checkbox.checked && img.classList.contains(checkbox.value)) {
-                isImageVisible = true;
+    let checkedStats = [];
+    document.querySelectorAll(".checkbox_stats").forEach(function(checkbox) {
+        if(checkbox.checked) {
+            checkedStats.push(checkbox.value);
+        }
+    });
+
+    document.querySelectorAll(".plot").forEach(function(img){
+        img.style.display = "none";
+        checkedStats.forEach(function(stat){
+            if(img.classList.contains(stat)) {
+                img.style.display = "block";
             }
         });
+    });
 
-        // Afficher ou cacher l'image basé sur la variable isImageVisible
-        img.style.display = isImageVisible ? 'block' : 'none';
+
+    let checkedTeams = [];
+    document.querySelectorAll(".checkbox_teams").forEach(function(checkbox) {
+        if(checkbox.checked) {
+            checkedTeams.push(checkbox.value);
+        }
+    });
+
+    const images = document.querySelectorAll('.by_team');
+    const displayedImages = Array.from(images).filter(img => {
+        return img.style.display !== "none";
+    });
+
+    displayedImages.forEach(function(img){
+        img.style.display = "none";
+        checkedTeams.forEach(function(team){
+            let breakFlag = false;
+            team.split(' ').forEach(function(t){
+                if(!img.classList.contains(t)) {
+                    breakFlag = true;
+                }         
+            });
+            if(!breakFlag) {
+                img.style.display = "block";
+            }
+        });
     });
 }
 
+
 // Ajouter un écouteur d'événement sur les checkboxes
-document.querySelectorAll('.checkbox').forEach(function(checkbox) {
+document.querySelectorAll('.checkbox_stats').forEach(function(checkbox) {
+    checkbox.addEventListener('change', updateImageDisplay);
+});
+document.querySelectorAll('.checkbox_teams').forEach(function(checkbox) {
     checkbox.addEventListener('change', updateImageDisplay);
 });
 

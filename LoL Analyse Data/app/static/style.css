@@ -38,3 +38,26 @@ select {
     border-radius: 5px;
     border: 1px solid #ccc;
 }
+#fieldset_checkbox {
+    display: inline-flex;
+    justify-content: center;
+    align-items: stretch;
+    flex-wrap: nowrap;
+    flex-direction: row;
+}
+#navbar ul {
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+    background-color: #dddddd;
+}
+  
+#navbar li {
+    float: left;
+}
+  
+#navbar li a {
+    display: block;
+    padding: 8px;
+}

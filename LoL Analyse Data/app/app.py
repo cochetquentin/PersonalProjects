@@ -1,31 +1,32 @@
 from tools import *
-from flask import Flask, render_template, request, jsonify
+from flask import Flask, render_template, request
 
 app = Flask(__name__)
+
+tournaments_analyzed = {
+    "lfl_spring_2024": "https://gol.gg/tournament/tournament-matchlist/LFL%20Spring%202024/",
+    "lec_winter_2024": "https://gol.gg/tournament/tournament-matchlist/LEC%20Winter%20Season%202024/",
+}
+
 
 @app.route('/')
 def index():
     return render_template('index.html')
 
 
-@app.route("/lec_winter_2024", methods=["GET"])
-def lec_winter_2024():
-    # Load the data
-    url = "https://gol.gg/tournament/tournament-matchlist/LEC%20Winter%20Season%202024/"
+@app.route("/analyse" , methods=["GET"])
+def analyse():
+    args = request.args
+    tournament = args.get("tournament")
+
+    if tournament not in tournaments_analyzed:
+        return render_template('analyse.html', possible_tournaments=list(tournaments_analyzed.keys()))
+
+    url = tournaments_analyzed[tournament]
     match_infos, game_stats = get_all_match_data_from_gol_url(url)
     img_datas = get_all_plots_data(match_infos, game_stats)
 
-    return render_template('index.html', img_datas=img_datas)
-
-
-@app.route("/lfl_spring_2024", methods=["GET"])
-def lfl_spring_2024():
-    # Load the data
-    url = "https://gol.gg/tournament/tournament-matchlist/LFL%20Spring%202024/"
-    match_infos, game_stats = get_all_match_data_from_gol_url(url)
-    img_datas = get_all_plots_data(match_infos, game_stats)
-
-    return render_template('index.html', img_datas=img_datas)
+    return render_template('analyse.html', img_datas=img_datas, team_names=match_infos["Team"].unique().tolist())
 
 
 if __name__ == '__main__':

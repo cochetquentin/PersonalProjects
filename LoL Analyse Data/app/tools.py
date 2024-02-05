@@ -427,7 +427,7 @@ def get_all_plots_data(match_infos:pd.DataFrame, game_stats:pd.DataFrame) -> lis
         save_plot(fig.get("fig"), f"static/imgs_to_plot/plot_wr_champions_{fig.get('name')}.png")
         img_datas.append({
             "path" : f"imgs_to_plot/plot_wr_champions_{fig.get('name')}.png",
-            "class" : f"{fig.get('name')} champions_wr"
+            "class" : f"{fig.get('name')} champions_wr by_team"
         })
 
     fig = plot_wr_bans(match_infos)
@@ -443,7 +443,7 @@ def get_all_plots_data(match_infos:pd.DataFrame, game_stats:pd.DataFrame) -> lis
         save_plot(fig.get("fig"), f"static/imgs_to_plot/plot_wr_bans_{fig.get('name')}.png")
         img_datas.append({
             "path" : f"imgs_to_plot/plot_wr_bans_{fig.get('name')}.png",
-            "class" : f"{fig.get('name')} bans_wr"
+            "class" : f"{fig.get('name')} bans_wr by_team"
         })
 
     figs = plot_average_stats_by_role(game_stats)
