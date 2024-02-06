@@ -9,7 +9,9 @@
     {% for tournament in possible_tournaments %}
         <option value="{{ tournament }}">{{ tournament|replace("_", " ")|upper }}</option>
     {% endfor %}
-</select><br><br>
+</select>
+<br><br>
+
 
 <div id="fieldset_checkbox">
     <fieldset>
@@ -47,7 +49,7 @@
     </fieldset>
 </div><br><br>
 
-
+<img src="{{ url_for('static', filename='spinner.gif') }}" alt="spinner" id="spinner">
 
 {% for data in img_datas %}
     <img src="{{ url_for('static', filename=data.path) }}" alt="Plot" class="plot {{ data.class }}">

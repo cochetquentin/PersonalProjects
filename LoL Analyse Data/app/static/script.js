@@ -1,7 +1,7 @@
+// Display spinner and make get request
 document.getElementById('competition-select').addEventListener('change', function() {
-    var valeur = this.value; // Obtenez la valeur sélectionnée
-    // Construisez l'URL avec la valeur comme paramètre de requête
-    window.location.href = window.location.pathname + '?tournament=' + valeur;
+    document.getElementById('spinner').style.display = 'block';
+    window.location.href = window.location.pathname + '?tournament=' + this.value;
 });
 
 // Fonction pour mettre à jour l'affichage des images

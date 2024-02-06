@@ -18,11 +18,22 @@ def get_match_links_from_gol_url(url:str) -> list:
     page = rq.get(url, headers = {"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64)"})
     soup = BeautifulSoup(page.content, "html.parser")
     links = soup.find("table").findAll("a", href = True)
-    return [f"https://gol.gg{link['href'][2:-10]}" for link in links if not "preview" in link['href']]
+    return [f"https://gol.gg{link['href'][2:]}" for link in links if not "preview" in link['href']]
+
+
+def get_size_of_bo(match_link:str) -> int:
+    page = rq.get(match_link, headers = {"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64)"})
+    soup = BeautifulSoup(page.content, "html.parser")
+    return len(soup.findAll("ul", {"class": "navbar-nav mr-auto mt-2 mt-lg-0"})[1].findAll("li")) - 2
+
+
+def get_match_links_from_bo(match_link:str, bo:int) -> list:
+    initial_value = int(match_link.split("/")[-1]) 
+    return [f"https://gol.gg/game/stats/{initial_value + i}" for i in range(bo)]
 
 
 def get_match_data_from_match_link(link:str, game_id:int=0) -> tuple([pd.DataFrame, pd.DataFrame]):
-    url = f"{link}/page-game//"
+    url = f"{link}/page-game/"
     page = rq.get(url, headers = {"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64)"})
     soup = BeautifulSoup(page.content, "html.parser")
 
@@ -92,6 +103,8 @@ def get_match_data_from_match_link(link:str, game_id:int=0) -> tuple([pd.DataFra
 
     game_stats_part = pd.DataFrame.from_dict(game_stats_part)
     game_stats_part.drop(columns=["CS in Enemy Jungle", "Solo kills", "KDA", "GOLD%", "VS%", "DMG%", "KP%"], inplace=True)
+    game_stats_part.replace("", "NaN", inplace=True)
+    game_stats_part = game_stats_part.infer_objects()
     game_stats_part[game_stats_part.columns[2:]] = game_stats_part[game_stats_part.columns[2:]].astype(float)
 
     # Add the an Id for the game, the team name and if they won
@@ -104,7 +117,11 @@ def get_match_data_from_match_link(link:str, game_id:int=0) -> tuple([pd.DataFra
 
 
 def get_all_match_data_from_gol_url(url:str) -> tuple([pd.DataFrame, pd.DataFrame]):
-    match_links = get_match_links_from_gol_url(url)[:10]
+    match_links = get_match_links_from_gol_url(url)
+    bos = [get_size_of_bo(link) for link in tqdm(match_links)]
+    match_links = ["/".join(match.split("/")[:-2]) for match in match_links]
+    match_links = [get_match_links_from_bo(link, bo) for link, bo in zip(match_links, bos)]
+    match_links = [link for sublist in match_links for link in sublist]
 
     match_infos =  []
     game_stats = []
@@ -367,6 +384,7 @@ def get_all_plots_data(match_infos:pd.DataFrame, game_stats:pd.DataFrame) -> lis
 
     fig = plot_side_wr(match_infos)
     save_plot(fig, "static/imgs_to_plot/plot_side_wr.png")
+    plt.close(fig)
     img_datas.append({
         "path" : "imgs_to_plot/plot_side_wr.png",
         "class" : "side_wr"
@@ -375,6 +393,7 @@ def get_all_plots_data(match_infos:pd.DataFrame, game_stats:pd.DataFrame) -> lis
 
     fig = plot_side_wr_by_team(match_infos)
     save_plot(fig, "static/imgs_to_plot/plot_side_wr_by_team.png")
+    plt.close(fig)
     img_datas.append({
         "path" : "imgs_to_plot/plot_side_wr_by_team.png",
         "class" : "side_wr"
@@ -382,34 +401,40 @@ def get_all_plots_data(match_infos:pd.DataFrame, game_stats:pd.DataFrame) -> lis
 
     fig = plot_average_stats_by_team(match_infos)
     save_plot(fig, "static/imgs_to_plot/plot_average_stats_by_team.png")
+    plt.close(fig)
     img_datas.append({
         "path" : "imgs_to_plot/plot_average_stats_by_team.png",
         "class" : "objectives_plot"
     })
 
-    fig = plot_drakes_taken_by_team(match_infos)
-    save_plot(fig, "static/imgs_to_plot/plot_drakes_taken_by_team.png")
-    img_datas.append({
-        "path" : "imgs_to_plot/plot_drakes_taken_by_team.png",
-        "class" : "objectives_plot"
-    })
+    if len(match_infos["Drakes"].explode("Drakes").value_counts()) > 1:
+        fig = plot_drakes_taken_by_team(match_infos)
+        save_plot(fig, "static/imgs_to_plot/plot_drakes_taken_by_team.png")
+        plt.close(fig)
+        img_datas.append({
+            "path" : "imgs_to_plot/plot_drakes_taken_by_team.png",
+            "class" : "objectives_plot"
+        })
 
-    fig = plot_drakes_taken(match_infos)
-    save_plot(fig, "static/imgs_to_plot/plot_drakes_taken.png")
-    img_datas.append({
-        "path" : "imgs_to_plot/plot_drakes_taken.png",
-        "class" : "objectives_plot"
-    })
+        fig = plot_drakes_taken(match_infos)
+        save_plot(fig, "static/imgs_to_plot/plot_drakes_taken.png")
+        plt.close(fig)
+        img_datas.append({
+            "path" : "imgs_to_plot/plot_drakes_taken.png",
+            "class" : "objectives_plot"
+        })
 
-    fig = plot_drakes_wr(match_infos)
-    save_plot(fig, "static/imgs_to_plot/plot_drakes_wr.png")
-    img_datas.append({
-        "path" : "imgs_to_plot/plot_drakes_wr.png",
-        "class" : "objectives_plot"
-    })
+        fig = plot_drakes_wr(match_infos)
+        save_plot(fig, "static/imgs_to_plot/plot_drakes_wr.png")
+        plt.close(fig)
+        img_datas.append({
+            "path" : "imgs_to_plot/plot_drakes_wr.png",
+            "class" : "objectives_plot"
+        })
 
     fig = plot_game_infos_win_correlation(match_infos)
     save_plot(fig, "static/imgs_to_plot/plot_game_infos_win_correlation.png")
+    plt.close(fig)
     img_datas.append({
         "path" : "imgs_to_plot/plot_game_infos_win_correlation.png",
         "class" : "objectives_plot"
@@ -417,6 +442,7 @@ def get_all_plots_data(match_infos:pd.DataFrame, game_stats:pd.DataFrame) -> lis
 
     fig = plot_wr_champions(game_stats)
     save_plot(fig, "static/imgs_to_plot/plot_wr_champions.png")
+    plt.close(fig)
     img_datas.append({
         "path" : "imgs_to_plot/plot_wr_champions.png",
         "class" : "champions_wr"
@@ -429,9 +455,11 @@ def get_all_plots_data(match_infos:pd.DataFrame, game_stats:pd.DataFrame) -> lis
             "path" : f"imgs_to_plot/plot_wr_champions_{fig.get('name')}.png",
             "class" : f"{fig.get('name')} champions_wr by_team"
         })
+        plt.close(fig.get("fig"))
 
     fig = plot_wr_bans(match_infos)
     save_plot(fig, "static/imgs_to_plot/plot_wr_bans.png")
+    plt.close(fig)
     img_datas.append({
         "path" : "imgs_to_plot/plot_wr_bans.png",
         "class" : "bans_wr" 
@@ -445,6 +473,7 @@ def get_all_plots_data(match_infos:pd.DataFrame, game_stats:pd.DataFrame) -> lis
             "path" : f"imgs_to_plot/plot_wr_bans_{fig.get('name')}.png",
             "class" : f"{fig.get('name')} bans_wr by_team"
         })
+        plt.close(fig.get("fig"))
 
     figs = plot_average_stats_by_role(game_stats)
     for fig in figs:
@@ -453,5 +482,6 @@ def get_all_plots_data(match_infos:pd.DataFrame, game_stats:pd.DataFrame) -> lis
             "path" : f"imgs_to_plot/plot_average_stats_by_role_{fig.get('name')}.png",
             "class" : f"{fig.get('name')} role_stats"
         })
+        plt.close(fig.get("fig"))
 
     return img_datas

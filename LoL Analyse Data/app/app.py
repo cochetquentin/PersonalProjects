@@ -4,8 +4,13 @@ from flask import Flask, render_template, request
 app = Flask(__name__)
 
 tournaments_analyzed = {
-    "lfl_spring_2024": "https://gol.gg/tournament/tournament-matchlist/LFL%20Spring%202024/",
-    "lec_winter_2024": "https://gol.gg/tournament/tournament-matchlist/LEC%20Winter%20Season%202024/",
+    "lfl_spring_2024_rs": "https://gol.gg/tournament/tournament-matchlist/LFL%20Spring%202024/",
+    "lec_winter_2024_rs": "https://gol.gg/tournament/tournament-matchlist/LEC%20Winter%20Season%202024/",
+    "lec_winter_2024_po": "https://gol.gg/tournament/tournament-matchlist/LEC%20Winter%20Playoffs%202024/",
+    "lpl_spring_2024_rs": "https://gol.gg/tournament/tournament-matchlist/LPL%20Spring%202024/",
+    "lck_spring_2024_rs": "https://gol.gg/tournament/tournament-matchlist/LCK%20Spring%202024/",
+    "lcs_spring_2024_rs": "https://gol.gg/tournament/tournament-matchlist/LCS%20Spring%202024/",
+    "lcs_spring_2024_po": "https://gol.gg/tournament/tournament-matchlist/LCS%20Spring%20Playoffs%202024/",
 }
 
 
