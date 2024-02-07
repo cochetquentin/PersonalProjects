@@ -31,7 +31,7 @@ def analyse():
     match_infos, game_stats = get_all_match_data_from_gol_url(url)
     img_datas = get_all_plots_data(match_infos, game_stats)
 
-    return render_template('analyse.html', img_datas=img_datas, team_names=match_infos["Team"].unique().tolist())
+    return render_template('analyse.html', img_datas=img_datas, team_names=match_infos["Team"].unique().tolist(), possible_tournaments=list(tournaments_analyzed.keys()))
 
 
 if __name__ == '__main__':

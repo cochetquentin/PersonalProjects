@@ -259,6 +259,18 @@ def plot_game_infos_win_correlation(match_infos:pd.DataFrame) -> plt.Figure:
     return fig
 
 
+def plot_game_first_blood_turret(match_infos:pd.DataFrame) -> plt.Figure:
+    fig, ax = plt.subplots(1, 1)
+    match_infos[["Team", "First Blood", "First Tower"]].groupby("Team").mean().plot.bar(
+        figsize = (10, 3),
+        title = "First blood and first tower rate",
+        ylabel = "",
+        ax = ax
+    )
+    plt.grid(axis = "y", linestyle = "--")
+    return fig
+
+
 def plot_game_stats_win_correlation(game_stats:pd.DataFrame) -> plt.Figure:
     fig, ax = plt.subplots(1, 1) 
     game_stats.drop(columns=["Player", "Role", "Team", "Champion", "Game ID"]).corr()["Win"].iloc[:-1].sort_values().plot.barh(
@@ -437,6 +449,22 @@ def get_all_plots_data(match_infos:pd.DataFrame, game_stats:pd.DataFrame) -> lis
     plt.close(fig)
     img_datas.append({
         "path" : "imgs_to_plot/plot_game_infos_win_correlation.png",
+        "class" : "objectives_plot"
+    })
+
+    fig = plot_game_first_blood_turret(match_infos)
+    save_plot(fig, "static/imgs_to_plot/plot_first_blood_turret.png")
+    plt.close(fig)
+    img_datas.append({
+        "path" : "imgs_to_plot/plot_first_blood_turret.png",
+        "class" : "objectives_plot"
+    })
+
+    fig = plot_game_stats_win_correlation(game_stats)
+    save_plot(fig, "static/imgs_to_plot/plot_game_stats_win_correlation.png")
+    plt.close(fig)
+    img_datas.append({
+        "path" : "imgs_to_plot/plot_game_stats_win_correlation.png",
         "class" : "objectives_plot"
     })
 
