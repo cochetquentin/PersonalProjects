@@ -25,5 +25,3 @@ AI that recommends videos to youtube users based on their likes. The AI contains
 - Numerical model: Retrieves numerical information from videos, such as video length, category, etc., in order to deduce a recommendation.
 - Thumbnail model: Retrieves the video's thumbnail to deduce a recommendation.
 - NLP model: retrieves the video title and description to deduce a recommendation
-
-**NLP model not yet implemented
