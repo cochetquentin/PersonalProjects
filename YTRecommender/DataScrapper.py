@@ -20,7 +20,7 @@ class DataScrapper():
         """
 
         self.yt = YoutubeAPI(client_secret_path)
-        self.numeric_data = None
+        self.video_data = None
 
         self.train_folder = "toTrain/"
         self.predict_folder = "toPredict/"
@@ -91,7 +91,7 @@ class DataScrapper():
         return sub_videos_df, liked_videos_df
 
 
-    def get_numeric_data(self, nb_liked_videos:int=5000, nb_subs_videos:int=50) -> pd.DataFrame:
+    def get_video_data(self, nb_liked_videos:int=5000, nb_subs_videos:int=50) -> pd.DataFrame:
         """
         Combines subscribed and liked video data into a single DataFrame.
 
@@ -102,10 +102,12 @@ class DataScrapper():
         Returns:
         pd.DataFrame: A combined DataFrame of subscribed and liked video data.
         """
-
-        sub_videos_df, liked_videos_df = self.get_videos_dfs(nb_liked_videos, nb_subs_videos)
-        self.numeric_data = pd.concat([sub_videos_df, liked_videos_df]).reset_index(drop=True)
-        return self.numeric_data
+        if self.video_data is None:
+            sub_videos_df, liked_videos_df = self.get_videos_dfs(nb_liked_videos, nb_subs_videos)
+            self.video_data = pd.concat([sub_videos_df, liked_videos_df]).reset_index(drop=True)
+            return self.video_data
+        else:
+            return self.video_data
     
 
     ####################################################################################################################
@@ -212,15 +214,15 @@ class DataScrapper():
         thumbnails_folder_path (str): The base path for storing thumbnails.
         """
 
-        if self.numeric_data is None:
+        if self.video_data is None:
             raise Exception("Numeric data is not loaded")
         
         liked_videoIds_dl = [f.split(".")[0] for f in listdir(thumbnails_folder_path+self.train_folder+self.liked_folder)]
         disliked_videoIds_dl = [f.split(".")[0] for f in listdir(thumbnails_folder_path+self.train_folder+self.disliked_folder)]
         videoIds_dl = liked_videoIds_dl + disliked_videoIds_dl
-        self.numeric_data["dl"] = self.numeric_data["videoId"].isin(videoIds_dl)
+        self.video_data["dl"] = self.video_data["videoId"].isin(videoIds_dl)
         
-        thumbnails = self.numeric_data[~self.numeric_data["dl"]]
+        thumbnails = self.video_data[~self.video_data["dl"]]
         thumbnails = thumbnails.loc[:, ["videoId", "thumbnails", "liked"]]
         thumbnails.loc[:, "liked"] = thumbnails["liked"].astype(int)
 
@@ -241,7 +243,7 @@ class DataScrapper():
         nb_subs_videos (int, optional): Number of subscribed videos to process.
         """
 
-        self.get_numeric_data(nb_liked_videos, nb_subs_videos)
+        self.get_video_data(nb_liked_videos, nb_subs_videos)
         self.get_thumbnails(thumbnails_folder_path)
 
 

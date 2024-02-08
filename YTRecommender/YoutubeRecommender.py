@@ -1,5 +1,5 @@
 from DataScrapper import DataScrapper
-from Recommender import NumericRecommender, IMGReccommender
+from Recommender import NumericRecommender, IMGReccommender, TextRecommender
 import pandas as pd
 
 class YoutubeRecommender():
@@ -8,7 +8,7 @@ class YoutubeRecommender():
     It handles training, saving, loading, and making predictions with both types of models.
     """
 
-    def __init__(self, client_secret_path:str, thumbnails_folder_path:str, pretrained_numeric_model_path:str=None, pretrained_img_model_path:str=None) -> None:
+    def __init__(self, client_secret_path:str, thumbnails_folder_path:str, pretrained_numeric_model_path:str=None, pretrained_img_model_path:str=None, pretrained_text_model_path:str=None) -> None:
         """
         Initializes the YoutubeRecommender with required paths and optional pretrained model paths.
 
@@ -23,14 +23,18 @@ class YoutubeRecommender():
         self.thumbnails_folder_path = thumbnails_folder_path
         self.pretrained_model_path = pretrained_numeric_model_path
         self.pretrained_img_model_path = pretrained_img_model_path
+        self.pretrained_text_model_path = pretrained_text_model_path
 
         self.scrapper = DataScrapper(client_secret_path)
         self.numericReco = NumericRecommender(pretrained_numeric_model_path)
         self.imgReco = IMGReccommender(pretrained_img_model_path)
+        self.textReco = TextRecommender(pretrained_text_model_path)
 
         self.videoToPredicts = None
         self.num_predicts = None
         self.img_predicts = None
+        self.title_predicts = None
+        self.description_predicts = None
         self.predicts = None
 
         self.scrapper.structured_folder(self.thumbnails_folder_path)
@@ -46,8 +50,8 @@ class YoutubeRecommender():
         model_save_path (str, optional): Path to save the trained numeric model.
         """
 
-        numeric_data = self.scrapper.get_numeric_data(nb_liked_videos, nb_subs_videos)
-        self.numericReco.train(numeric_data)
+        video_data = self.scrapper.get_video_data(nb_liked_videos, nb_subs_videos)
+        self.numericReco.train(video_data)
         if not model_save_path is None:
             self.numericReco.save(model_save_path)
 
@@ -89,10 +93,36 @@ class YoutubeRecommender():
         self.imgReco.load(model_path)
 
 
-    def train_model(self, nb_liked_videos:int=5000, nb_subs_videos:int=50, epoch:int=5, verbose:bool=True,  
-                    numeric_model_save_path:str=None, img_model_save_path:str=None) -> None:
+    def train_text_model(self, nb_liked_videos:int=5000, nb_subs_videos:int=50, model_save_path:str=None) -> None:
         """
-        Trains both numeric and image models and optionally saves them.
+        Trains the text model using data obtained from the DataScrapper.
+
+        Parameters:
+        nb_liked_videos (int, optional): Number of liked videos to include. Default is 5000.
+        nb_subs_videos (int, optional): Number of subscription videos to include. Default is 50.
+        model_save_path (str, optional): Path to save the trained text model.
+        """
+        video_data = self.scrapper.get_video_data(nb_liked_videos, nb_subs_videos)
+        self.textReco.train(video_data)
+        if not model_save_path is None:
+            self.textReco.save(model_save_path)
+
+
+    def load_text_model(self, model_path:str) -> None:
+        """
+        Loads a pre-trained text model from the specified path.
+
+        Parameters:
+        model_path (str): Path from which to load the text model.
+        """
+
+        self.textReco.load(model_path)
+
+
+    def train_model(self, nb_liked_videos:int=5000, nb_subs_videos:int=50, epoch:int=5, verbose:bool=True,  
+                    numeric_model_save_path:str=None, img_model_save_path:str=None, text_model_save_path:str=None) -> None:
+        """
+        Train all three models: numeric, image, and text.
 
         Parameters:
         nb_liked_videos (int, optional): Number of liked videos to include. Default is 5000.
@@ -101,15 +131,18 @@ class YoutubeRecommender():
         verbose (bool, optional): If True, displays training progress. Default is True.
         numeric_model_save_path (str, optional): Path to save the trained numeric model.
         img_model_save_path (str, optional): Path to save the trained image model.
+        text_model_save_path (str, optional): Path to save the trained text model.
         """
 
         self.train_numeric_model(nb_liked_videos, nb_subs_videos, numeric_model_save_path)
         self.train_img_model(epoch, verbose, img_model_save_path)
+        self.train_text_model(nb_liked_videos, nb_subs_videos, text_model_save_path)
+
 
 
     def load_model(self, models_folder_path:str) -> None:
         """
-        Loads both numeric and image models from the specified folder path.
+        Loads all three models from the specified folder path.
 
         Parameters:
         models_folder_path (str): The folder path where both models are stored.
@@ -120,6 +153,7 @@ class YoutubeRecommender():
 
         self.load_numeric_model(f"{models_folder_path}NumericRecommender/")
         self.load_img_model(f"{models_folder_path}IMGRecommender.pt")
+        self.load_text_model(f"{models_folder_path}TextRecommender/")
 
 
     def get_numeric_recommendation(self) -> None:
@@ -169,6 +203,23 @@ class YoutubeRecommender():
         self.img_predicts.columns = ["img_0", "img_1"]
 
 
+    def get_text_recommendation(self) -> None:
+        """
+        Generates text-based recommendations based on the home page video data.
+        """
+
+        if self.videoToPredicts is None:
+            self.videoToPredicts = self.scrapper.get_videoData_toPredict()
+        if self.textReco.isTrained is False:
+            raise Exception("Text model is not trained")
+
+        self.title_predicts, self.description_predicts = self.textReco.predict(self.videoToPredicts)
+        self.title_predicts = pd.DataFrame(self.title_predicts, columns=["title_0", "title_1"])
+        self.title_predicts.index = self.videoToPredicts.index
+        self.description_predicts = pd.DataFrame(self.description_predicts, columns=["description_0", "description_1"])
+        self.description_predicts.index = self.videoToPredicts.index
+
+
     def get_recommendations(self) -> None:
         """
         Combines both numeric and image-based predictions into a single recommendation.
@@ -178,10 +229,16 @@ class YoutubeRecommender():
             self.get_numeric_recommendation()
         if self.img_predicts is None:
             self.get_img_recommendation()
+        if self.title_predicts is None or self.description_predicts is None:
+            self.get_text_recommendation()
 
+        print(type(self.num_predicts))
         self.predicts = self.num_predicts.merge(self.img_predicts, left_index=True, right_index=True)
-        self.predicts["0"] = self.predicts.loc[:, ["num_0", "img_0"]].mean(axis=1)
-        self.predicts["1"] = self.predicts.loc[:, ["num_1", "img_1"]].mean(axis=1)
+        self.predicts = self.predicts.merge(self.title_predicts, left_index=True, right_index=True)
+        self.predicts = self.predicts.merge(self.description_predicts, left_index=True, right_index=True)
+
+        self.predicts["0"] = self.predicts.loc[:, ["num_0", "img_0", "title_0", "description_0"]].mean(axis=1)
+        self.predicts["1"] = self.predicts.loc[:, ["num_1", "img_1", "title_1", "description_1"]].mean(axis=1)
 
 
     def ranking(self) -> pd.DataFrame:
