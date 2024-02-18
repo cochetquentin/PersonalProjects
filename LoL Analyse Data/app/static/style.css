@@ -1,75 +1,118 @@
+/* style.css */
 
 body {
-    font-family: Arial, sans-serif;
-    margin: 20px;
-    padding: 20px;
+    font-family: 'Arial', sans-serif;
     background-color: #f0f0f0;
+    margin: 0;
+    padding: 0;
 }
-label, select {
-    margin: 10px 0;
+
+nav#navbar {
+    background-color: #333;
+    color: white;
+    padding: 10px 0;
 }
-fieldset {
-    border: 1px solid #ddd;
-    padding: 10px;
-    margin-top: 20px;
-    background-color: #fff;
-}
-legend {
-    padding: 0 5px;
-    font-size: 16px;
-    font-weight: bold;
-    color: #333;
-}
-.checkbox + label {
-    margin-right: 20px;
-}
-.plot {
-    max-width: 100%;
-    height: auto;
-    display: block;
-    margin-bottom: 20px;
-    box-shadow: 0 0 8px #ccc;
-}
-select, button, input[type="checkbox"] {
-    cursor: pointer;
-}
-select {
-    padding: 5px 10px;
-    border-radius: 5px;
-    border: 1px solid #ccc;
-}
-#fieldset_checkbox {
-    display: inline-flex;
-    justify-content: center;
-    align-items: stretch;
-    flex-wrap: nowrap;
-    flex-direction: row;
-}
-#navbar ul {
+
+nav#navbar ul {
     list-style-type: none;
     margin: 0;
     padding: 0;
-    overflow: hidden;
-    background-color: #dddddd;
+    text-align: center;
 }
-  
-#navbar li {
-    float: left;
+
+nav#navbar ul li {
+    display: inline;
+    margin: 0 20px;
 }
-  
-#navbar li a {
+
+nav#navbar ul li a {
+    color: white;
+    text-decoration: none;
+    font-size: 18px;
+}
+
+div#container {
+    margin: 20px;
+}
+
+h1 {
+    color: #333;
+}
+
+label {
+    font-weight: bold;
+}
+
+select, input[type="checkbox"] {
+    display: inline-block;
+    border-radius: 5px;
+    margin-right: 3px;
+}
+
+fieldset {
+    border: 2px solid #ddd;
+    padding: 15px;
+    margin-bottom: 20px;
+}
+
+legend {
+    color: #333;
+    padding: 0 5px;
+    font-weight: bold;
+}
+
+#fieldset_checkbox div {
+    margin-bottom: 10px;
+}
+
+img.plot {
     display: block;
-    padding: 8px;
+    margin-top: 20px;
+    max-width: 100%;
+    height: auto;
 }
-#spinner {
+
+img#spinner {
+    display: none; /* Masquer le spinner par défaut, afficher via JavaScript lors du chargement */
+    margin: auto; /* Centrer l'image */
+}
+
+/* Style pour le bouton refresh */
+button#refresh_button {
     display: none;
-    z-index: 999;
-    height: 15;
-    width: 15;
-    overflow: show;
-    margin: auto;
-    top: 0;
-    left: 0;
-    bottom: 0;
-    right: 0;
+    background-color: #4CAF50; /* Couleur de fond */
+    color: white; /* Couleur du texte */
+    padding: 12px 24px; /* Espacement intérieur */
+    border: none; /* Pas de bordure */
+    border-radius: 5px; /* Bords arrondis */
+    cursor: pointer; /* Curseur en forme de pointeur */
+    font-size: 16px; /* Taille du texte */
+    transition: background-color 0.3s ease; /* Transition douce pour le survol */
+}
+
+button#refresh_button:hover {
+    background-color: #45a049; /* Couleur de fond au survol */
+}
+
+button#refresh_button:active {
+    background-color: #3e8e41; /* Couleur de fond lors du clic */
+    box-shadow: inset 0 0 5px rgba(0,0,0,0.2); /* Ombre intérieure pour effet enfoncé */
+}
+
+div#tournament_container {
+    display: inline-flex;
+    margin-top: 2px;
+}
+
+/* Responsive design pour les grands écrans */
+@media (min-width: 768px) {
+    div#fieldset_checkbox {
+        display: flex;
+        justify-content: space-between;
+    }
+    
+    fieldset {
+        margin: 10px;
+        width: calc(50% - 20px);
+    }
 }
