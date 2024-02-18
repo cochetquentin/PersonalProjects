@@ -3,13 +3,16 @@
 
 <h1>Tournament Analyse</h1>
 
-<label for="competition-select">Choose a competition:</label>
-<select name="competitions" id="competition-select">
-    <option value="">--Please choose an option--</option>
-    {% for tournament in possible_tournaments %}
-        <option value="{{ tournament }}">{{ tournament|replace("_", " ")|upper }}</option>
-    {% endfor %}
-</select>
+<label for="competition-select">Choose a competition:</label><br>
+<div id="tournament_container">
+    <select name="competitions" id="competition-select">
+        <option value="default">--Please choose an option--</option>
+        {% for tournament in possible_tournaments %}
+            <option value="{{ tournament }}">{{ tournament|replace("_", " ")|upper }}</option>
+        {% endfor %}
+    </select>
+    <button id="refresh_button">Refresh</button>
+</div>
 <br><br>
 
 
@@ -49,7 +52,9 @@
     </fieldset>
 </div><br><br>
 
-<img src="{{ url_for('static', filename='spinner.gif') }}" alt="spinner" id="spinner">
+<a href="https://www.freeiconspng.com/img/12071" title="Image from freeiconspng.com">
+    <img id="spinner" src="https://www.freeiconspng.com/uploads/spinner-icon-0.gif" width="350" alt="Icon Download Spinner" />
+</a>
 
 {% for data in img_datas %}
     <img src="{{ url_for('static', filename=data.path) }}" alt="Plot" class="plot {{ data.class }}">
@@ -57,5 +62,4 @@
 
 
 <script src="{{ url_for('static', filename='script.js') }}"></script>
-
 {% endblock %}

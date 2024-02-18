@@ -7,6 +7,7 @@ from bs4 import BeautifulSoup
 import requests as rq
 import io
 import base64
+from os import path, mkdir, listdir
 
 from tqdm.auto import tqdm
 
@@ -390,126 +391,86 @@ def plot_average_stats_by_role(game_stats:pd.DataFrame) -> list([plt.Figure]):
         
 
 
-def get_all_plots_data(match_infos:pd.DataFrame, game_stats:pd.DataFrame) -> list([dict]):
-    #Plot the data
-    img_datas = []
+def create_all_plots_data(match_infos:pd.DataFrame, game_stats:pd.DataFrame, tournament:str) -> None:
+    folder = f"static/imgs_to_plot/{tournament}/"
 
+    if not path.exists(folder):
+        mkdir(folder)
+    
+    #Create plots
     fig = plot_side_wr(match_infos)
-    save_plot(fig, "static/imgs_to_plot/plot_side_wr.png")
+    save_plot(fig, f"{folder}plot_side_wr__side_wr.png")
     plt.close(fig)
-    img_datas.append({
-        "path" : "imgs_to_plot/plot_side_wr.png",
-        "class" : "side_wr"
-    })
     
 
     fig = plot_side_wr_by_team(match_infos)
-    save_plot(fig, "static/imgs_to_plot/plot_side_wr_by_team.png")
+    save_plot(fig, f"{folder}plot_side_wr_by_team__side_wr.png")
     plt.close(fig)
-    img_datas.append({
-        "path" : "imgs_to_plot/plot_side_wr_by_team.png",
-        "class" : "side_wr"
-    })
 
     fig = plot_average_stats_by_team(match_infos)
-    save_plot(fig, "static/imgs_to_plot/plot_average_stats_by_team.png")
+    save_plot(fig, f"{folder}plot_average_stats_by_team__objectives_plot.png")
     plt.close(fig)
-    img_datas.append({
-        "path" : "imgs_to_plot/plot_average_stats_by_team.png",
-        "class" : "objectives_plot"
-    })
 
     if len(match_infos["Drakes"].explode("Drakes").value_counts()) > 1:
         fig = plot_drakes_taken_by_team(match_infos)
-        save_plot(fig, "static/imgs_to_plot/plot_drakes_taken_by_team.png")
+        save_plot(fig, f"{folder}plot_drakes_taken_by_team__objectives_plot.png")
         plt.close(fig)
-        img_datas.append({
-            "path" : "imgs_to_plot/plot_drakes_taken_by_team.png",
-            "class" : "objectives_plot"
-        })
 
         fig = plot_drakes_taken(match_infos)
-        save_plot(fig, "static/imgs_to_plot/plot_drakes_taken.png")
+        save_plot(fig, f"{folder}plot_drakes_taken__objectives_plot.png")
         plt.close(fig)
-        img_datas.append({
-            "path" : "imgs_to_plot/plot_drakes_taken.png",
-            "class" : "objectives_plot"
-        })
 
         fig = plot_drakes_wr(match_infos)
-        save_plot(fig, "static/imgs_to_plot/plot_drakes_wr.png")
+        save_plot(fig, f"{folder}plot_drakes_wr__objectives_plot.png")
         plt.close(fig)
-        img_datas.append({
-            "path" : "imgs_to_plot/plot_drakes_wr.png",
-            "class" : "objectives_plot"
-        })
 
     fig = plot_game_infos_win_correlation(match_infos)
-    save_plot(fig, "static/imgs_to_plot/plot_game_infos_win_correlation.png")
+    save_plot(fig, f"{folder}plot_game_infos_win_correlation__objectives_plot.png")
     plt.close(fig)
-    img_datas.append({
-        "path" : "imgs_to_plot/plot_game_infos_win_correlation.png",
-        "class" : "objectives_plot"
-    })
 
     fig = plot_game_first_blood_turret(match_infos)
-    save_plot(fig, "static/imgs_to_plot/plot_first_blood_turret.png")
+    save_plot(fig, f"{folder}plot_first_blood_turret__objectives_plot.png")
     plt.close(fig)
-    img_datas.append({
-        "path" : "imgs_to_plot/plot_first_blood_turret.png",
-        "class" : "objectives_plot"
-    })
 
     fig = plot_game_stats_win_correlation(game_stats)
-    save_plot(fig, "static/imgs_to_plot/plot_game_stats_win_correlation.png")
+    save_plot(fig, f"{folder}plot_game_stats_win_correlation__objectives_plot.png")
     plt.close(fig)
-    img_datas.append({
-        "path" : "imgs_to_plot/plot_game_stats_win_correlation.png",
-        "class" : "objectives_plot"
-    })
 
     fig = plot_wr_champions(game_stats)
-    save_plot(fig, "static/imgs_to_plot/plot_wr_champions.png")
+    save_plot(fig, f"{folder}plot_wr_champions__champions_wr.png")
     plt.close(fig)
-    img_datas.append({
-        "path" : "imgs_to_plot/plot_wr_champions.png",
-        "class" : "champions_wr"
-    })
 
     figs = plot_wr_champions_by_team(game_stats)
     for fig in figs:
-        save_plot(fig.get("fig"), f"static/imgs_to_plot/plot_wr_champions_{fig.get('name')}.png")
-        img_datas.append({
-            "path" : f"imgs_to_plot/plot_wr_champions_{fig.get('name')}.png",
-            "class" : f"{fig.get('name')} champions_wr by_team"
-        })
+        save_plot(fig.get("fig"), f"{folder}plot_wr_champions_{fig.get('name')}__{fig.get('name')} champions_wr by_team.png")
         plt.close(fig.get("fig"))
 
     fig = plot_wr_bans(match_infos)
-    save_plot(fig, "static/imgs_to_plot/plot_wr_bans.png")
+    save_plot(fig, f"{folder}plot_wr_bans__bans_wr.png")
     plt.close(fig)
-    img_datas.append({
-        "path" : "imgs_to_plot/plot_wr_bans.png",
-        "class" : "bans_wr" 
-    })
 
 
     figs = plot_wr_bans_by_team(match_infos)
     for fig in figs:
-        save_plot(fig.get("fig"), f"static/imgs_to_plot/plot_wr_bans_{fig.get('name')}.png")
-        img_datas.append({
-            "path" : f"imgs_to_plot/plot_wr_bans_{fig.get('name')}.png",
-            "class" : f"{fig.get('name')} bans_wr by_team"
-        })
+        save_plot(fig.get("fig"), f"{folder}plot_wr_bans_{fig.get('name')}__{fig.get('name')} bans_wr by_team.png")
         plt.close(fig.get("fig"))
 
     figs = plot_average_stats_by_role(game_stats)
     for fig in figs:
-        save_plot(fig.get("fig"), f"static/imgs_to_plot/plot_average_stats_by_role_{fig.get('name')}.png")
-        img_datas.append({
-            "path" : f"imgs_to_plot/plot_average_stats_by_role_{fig.get('name')}.png",
-            "class" : f"{fig.get('name')} role_stats"
-        })
+        save_plot(fig.get("fig"), f"{folder}plot_average_stats_by_role_{fig.get('name')}__{fig.get('name')} role_stats.png")
         plt.close(fig.get("fig"))
 
-    return img_datas
+    with open(f"{folder}team_name", "w") as file:
+        file.write("\n".join(match_infos["Team"].unique()))
+
+
+def get_all_plots_data(tournament:str) -> tuple([list([dict]), list([str])]):
+    folder = f"imgs_to_plot/{tournament}/"
+    files = listdir("static/"+folder)
+    
+    path_class = [{"path": folder+f, "class": f.split("__")[1].split(".")[0]} for f in files if f.endswith(".png")]
+    
+    with open(f"static/{folder}team_name", "r") as file:
+        team_names = file.read().split("\n")
+
+    return path_class, team_names
